@@ -24,11 +24,11 @@ def allowed_file(filename):
 # Initialize JSON files and folders if they don't exist
 def init_json_files():
     if not os.path.exists(USERS_FILE):
-        print(f"Initializing {USERS_FILE}...")
+        # print(f"Initializing {USERS_FILE}...")
         with open(USERS_FILE, 'w') as f:
             json.dump({'test@example.com': 'password123'}, f, indent=4) # Add a default user
     if not os.path.exists(PROFILE_INFO_FILE):
-        print(f"Initializing {PROFILE_INFO_FILE}...")
+        # print(f"Initializing {PROFILE_INFO_FILE}...")
         with open(PROFILE_INFO_FILE, 'w') as f:
             json.dump({
                 'test@example.com': {
@@ -49,13 +49,13 @@ def init_json_files():
                 }
             }, f, indent=4)
     
-    # Create JDs folder and a sample JD file if not present
     if not os.path.exists(JDS_FOLDER):
-        print(f"JDs folder: DOES NOT exists")
-
-    # New: Create CandidateResumes folder if not present
+        os.makedirs(JDS_FOLDER)
+        # print(f"Created folder: {JDS_FOLDER}")
+    
     if not os.path.exists(CANDIDATE_RESUMES_FOLDER):
-        print(f"CandidateResumes folder: DOES NOT exists")
+        os.makedirs(CANDIDATE_RESUMES_FOLDER)
+        # print(f"Created folder: {CANDIDATE_RESUMES_FOLDER}")
 
 
 init_json_files()
@@ -65,7 +65,7 @@ def read_json_file(filename):
     try:
         with open(filename, 'r') as f:
             data = json.load(f)
-            print(f"Successfully read {filename}. Data: {data}")
+            # print(f"Successfully read {filename}. Data: {data}")
             return data
     except FileNotFoundError:
         print(f"File not found: {filename}. Returning empty dict.")
@@ -79,7 +79,7 @@ def write_json_file(filename, data):
     try:
         with open(filename, 'w') as f:
             json.dump(data, f, indent=4)
-            print(f"Successfully wrote to {filename}. Data: {data}")
+            # print(f"Successfully wrote to {filename}. Data: {data}")
     except Exception as e:
         print(f"Error writing to {filename}: {e}")
 
@@ -102,12 +102,12 @@ def signup():
     password = data.get('password')
 
     if not email or not password:
-        print("Signup: Missing email or password.")
+        # print("Signup: Missing email or password.")
         return jsonify({'message': 'Email and password are required'}), 400
 
     users_data = read_json_file(USERS_FILE)
     if email in users_data:
-        print(f"Signup: User {email} already exists.")
+        # print(f"Signup: User {email} already exists.")
         return jsonify({'message': 'User with this email already exists'}), 409
 
     # Store password directly (for demo). In production, use password hashing!
@@ -129,7 +129,7 @@ def signup():
     }
     write_json_file(PROFILE_INFO_FILE, profile_data) # This line should write to profile_info.json
 
-    print(f"Signup: User {email} registered successfully.")
+    # print(f"Signup: User {email} registered successfully.")
     return jsonify({'message': 'User registered successfully'}), 201
 
 # API for user login
@@ -143,10 +143,10 @@ def login():
 
     # In production, compare hashed passwords
     if email in users_data and users_data[email] == password:
-        print(f"Login: User {email} successful.")
+        # print(f"Login: User {email} successful.")
         return jsonify({'message': 'Login successful', 'email': email}), 200
     else:
-        print(f"Login: Invalid credentials for {email}.")
+        # print(f"Login: Invalid credentials for {email}.")
         return jsonify({'message': 'Invalid email or password'}), 401
 
 # API to get user profile
@@ -155,10 +155,10 @@ def get_profile(email):
     profile_data = read_json_file(PROFILE_INFO_FILE)
     profile = profile_data.get(email)
     if profile:
-        print(f"Profile: Retrieved profile for {email}.")
+        # print(f"Profile: Retrieved profile for {email}.")
         return jsonify(profile), 200
     else:
-        print(f"Profile: Profile not found for {email}.")
+        # print(f"Profile: Profile not found for {email}.")
         return jsonify({'message': 'Profile not found'}), 404
 
 # API to apply for a job
@@ -169,12 +169,12 @@ def apply_job():
     job_title = data.get('jobTitle')
 
     if not email or not job_title:
-        print("Apply Job: Missing email or job title.")
+        # print("Apply Job: Missing email or job title.")
         return jsonify({'message': 'Email and job title are required'}), 400
 
     profile_data = read_json_file(PROFILE_INFO_FILE)
     if email not in profile_data:
-        print(f"Apply Job: User profile not found for {email}.")
+        # print(f"Apply Job: User profile not found for {email}.")
         return jsonify({'message': 'User profile not found'}), 404
 
     # Add application to user's profile
@@ -183,7 +183,7 @@ def apply_job():
     profile_data[email]['applications'].append({'job': job_title, 'status': 'Pending'})
     write_json_file(PROFILE_INFO_FILE, profile_data)
 
-    print(f"Apply Job: Application for {job_title} submitted by {email}.")
+    # print(f"Apply Job: Application for {job_title} submitted by {email}.")
     return jsonify({'message': f'Application for "{job_title}" submitted successfully'}), 200
 
 # API: Update user profile
@@ -193,12 +193,12 @@ def update_profile():
     email = data.get('email')
     
     if not email:
-        print("Update Profile: Missing email.")
+        # print("Update Profile: Missing email.")
         return jsonify({'message': 'Email is required'}), 400
 
     profile_data = read_json_file(PROFILE_INFO_FILE)
     if email not in profile_data:
-        print(f"Update Profile: Profile not found for {email}.")
+        # print(f"Update Profile: Profile not found for {email}.")
         return jsonify({'message': 'Profile not found'}), 404
 
     # Update fields if they exist in the incoming data
@@ -212,7 +212,7 @@ def update_profile():
     profile_to_update['linkedinVerified'] = data.get('linkedinVerified', profile_to_update.get('linkedinVerified', False)) # Update verification status
 
     write_json_file(PROFILE_INFO_FILE, profile_data)
-    print(f"Update Profile: Profile for {email} updated successfully.")
+    # print(f"Update Profile: Profile for {email} updated successfully.")
     return jsonify({'message': 'Profile updated successfully'}), 200
 
 # API: Get all job listings from JDs folder
@@ -229,7 +229,7 @@ def get_jobs():
                         jobs.append(job_data)
                 except Exception as e:
                     print(f"Error reading job file {filename}: {e}")
-    print(f"Retrieved {len(jobs)} job listings.")
+    # print(f"Retrieved {len(jobs)} job listings.")
     return jsonify(jobs), 200
 
 # NEW API: Upload resume
