@@ -16,7 +16,7 @@
     <!-- Header -->
     <header class="bg-white shadow-md py-4">
         <div class="container flex justify-between items-center">
-            <a href="#" class="text-3xl font-bold text-orange-600" onclick="navigateTo('home')">Novere Talent</a>
+            <a href="#" class="text-3xl font-bold text-orange-600" onclick="window.navigateTo('home')">Novere Talent</a>
             <nav>
                 <ul class="flex space-x-6">
                     <!-- Navigation items will be dynamically updated by main.js -->
@@ -45,13 +45,19 @@
     <!-- Message Modal -->
     <div id="messageModal" class="modal">
         <div class="modal-content">
-            <span class="close-button" onclick="closeModal()">&times;</span>
+            <span class="close-button" onclick="window.closeModal()">&times;</span>
             <p id="modalMessage" class="text-lg font-semibold"></p>
-            <button class="btn-primary mt-4" onclick="closeModal()">OK</button>
+            <button class="btn-primary mt-4" onclick="window.closeModal()">OK</button>
         </div>
     </div>
 
-    <!-- Link to external JavaScript file -->
-    <script src="main.js"></script>
+    <!-- Link to external JavaScript files (order matters for dependencies) -->
+    <script type="module" src="utils.js"></script>
+    <script type="module" src="pages/home.js"></script>
+    <script type="module" src="pages/applyJobs.js"></script>
+    <script type="module" src="pages/auth.js"></script>
+    <script type="module" src="pages/profile.js"></script>
+    <script type="module" src="navigation.js"></script>
+    <script type="module" src="main.js"></script>
 </body>
 </html>
